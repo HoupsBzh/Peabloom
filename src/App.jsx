@@ -65,6 +65,27 @@ export default function ETFTracker() {
   },[]);
 
   useEffect(()=>{
+  let startX=0;
+  const tabs=["entry","monthly","annual","settings"];
+  const onStart=e=>{ startX=e.touches[0].clientX; };
+  const onEnd=e=>{
+    const diff=startX-e.changedTouches[0].clientX;
+    if(Math.abs(diff)<60) return;
+    setTab(t=>{
+      const idx=tabs.indexOf(t);
+      if(diff>0) return tabs[Math.min(idx+1,tabs.length-1)];
+      return tabs[Math.max(idx-1,0)];
+    });
+  };
+  document.addEventListener("touchstart",onStart);
+  document.addEventListener("touchend",onEnd);
+  return()=>{
+    document.removeEventListener("touchstart",onStart);
+    document.removeEventListener("touchend",onEnd);
+  };
+},[]);
+
+  useEffect(()=>{
     (async()=>{
       const ri=await storageGet("etf5-inv"), rc=await storageGet("etf5-cfg"), rp=await storageGet("etf5-prices");
       let mode="none";
