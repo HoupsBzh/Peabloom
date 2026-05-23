@@ -479,17 +479,17 @@ export default function ETFTracker() {
   const tp=Object.values(investments).filter(v=>(v[`e${i}`]||0)>0).length;
   const ti=Object.values(investments).reduce((s,v)=>s+(v[`e${i}`]||0),0);
   const ap=tp>0?(ti/tp).toFixed(2):null;
-  return <div style={{display:"flex",gap:8}}>
+  return <div style={{display:"flex",gap:8,marginBottom:8}}>
     <div style={{flex:1}}>
       <div style={{...lbl("#4A4270"),marginBottom:4}}>Parts</div>
-      <div style={{...inp({fontSize:12,padding:"9px 12px"}),color:tp>0?MINT:"#4A4270",cursor:"default"}}>
+      <div style={{...inp({fontSize:12,padding:"9px 12px"}),color:tp>0?"rgba(245,240,238,0.85)":"#4A4270",cursor:"default"}}>
         {tp>0?tp:"—"}
       </div>
     </div>
     <div style={{flex:1}}>
       <div style={{...lbl("#4A4270"),marginBottom:4}}>Prix moyen (€)</div>
       {tp>0
-        ?<div style={{...inp({fontSize:12,padding:"9px 12px"}),color:MINT,cursor:"default"}}>{ap}</div>
+        ?<div style={{...inp({fontSize:12,padding:"9px 12px"}),color:"rgba(245,240,238,0.85)",cursor:"default"}}>{ap}</div>
         :<input type="number" step="0.0001" value={etf.prixMoyen} onChange={e=>saveCfg({...settings,peaEtfs:settings.peaEtfs.map((x,j)=>j===i?{...x,prixMoyen:+e.target.value}:x)})}
           style={inp({fontSize:12,padding:"9px 12px"})} placeholder="Premier prix"/>
       }
