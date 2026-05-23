@@ -492,6 +492,7 @@ export default function ETFTracker() {
           style={inp({fontSize:12,padding:"9px 12px"})} placeholder="Premier prix"/>
     }
   </div>
+               </div>   
                 <div><div style={{...lbl("#4A4270"),marginBottom:4}}>🎯 Objectif DCA mensuel</div>
                   <div style={{position:"relative"}}>
                     <input type="number" value={etf.goal} onChange={e=>saveCfg({...settings,peaEtfs:settings.peaEtfs.map((x,j)=>j===i?{...x,goal:e.target.value}:x)})}
