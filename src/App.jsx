@@ -62,6 +62,9 @@ export default function ETFTracker() {
     const l=document.createElement("link"); l.id="nfont"; l.rel="stylesheet";
     l.href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap";
     document.head.appendChild(l);
+    const s=document.createElement("style");
+s.textContent="@keyframes tabIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}";
+document.head.appendChild(s);
   },[]);
 
   useEffect(()=>{
@@ -244,7 +247,7 @@ export default function ETFTracker() {
         </div>
       </div>
 
-      <div style={{padding:"16px 16px 0"}}>
+      <div key={tab} style={{padding:"16px 16px 0",animation:"tabIn 0.18s ease"}}>
 
         {/* ══ SAISIE ══ */}
         {tab==="entry" && <>
