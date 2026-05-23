@@ -71,24 +71,40 @@ document.head.appendChild(s);
   },[]);
 
   useEffect(()=>{
-  let startX=0;
-  let currentDrag=0;
+  let startX=0, startY=0, currentDrag=0;
   const tabs=["entry","monthly","annual","settings"];
-  const onStart=e=>{ startX=e.touches[0].clientX; currentDrag=0; setIsDragging(true); };
-  const onMove=e=>{ currentDrag=e.touches[0].clientX-startX; setDragX(currentDrag); };
+  
+  const onStart=e=>{
+    startX=e.touches[0].clientX;
+    startY=e.touches[0].clientY;
+    currentDrag=0;
+    setIsDragging(true);
+  };
+  
+  const onMove=e=>{
+    const dx=e.touches[0].clientX-startX;
+    const dy=e.touches[0].clientY-startY;
+    if(Math.abs(dx)>Math.abs(dy)){
+      e.preventDefault();
+      currentDrag=dx;
+      setDragX(currentDrag);
+    }
+  };
+  
   const onEnd=()=>{
     setIsDragging(false);
-    if(Math.abs(currentDrag)<60){ setDragX(0); currentDrag=0; return; }
+    if(Math.abs(currentDrag)<60){setDragX(0);currentDrag=0;return;}
     const dir=currentDrag<0?"right":"left";
     setTabDir(dir);
     setTab(t=>{
       const idx=tabs.indexOf(t);
       return dir==="right"?tabs[Math.min(idx+1,tabs.length-1)]:tabs[Math.max(idx-1,0)];
     });
-    setDragX(0); currentDrag=0;
+    setDragX(0);currentDrag=0;
   };
+  
   document.addEventListener("touchstart",onStart,{passive:true});
-  document.addEventListener("touchmove",onMove,{passive:true});
+  document.addEventListener("touchmove",onMove,{passive:false});
   document.addEventListener("touchend",onEnd);
   return()=>{
     document.removeEventListener("touchstart",onStart);
@@ -96,6 +112,7 @@ document.head.appendChild(s);
     document.removeEventListener("touchend",onEnd);
   };
 },[]);
+  
   useEffect(()=>{
     (async()=>{
       const ri=await storageGet("etf5-inv"), rc=await storageGet("etf5-cfg"), rp=await storageGet("etf5-prices");
