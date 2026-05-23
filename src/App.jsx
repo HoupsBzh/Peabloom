@@ -158,6 +158,16 @@ export default function ETFTracker() {
     const gainPct=gain!=null&&invested>0?(gain/invested)*100:null;
     return {...etf,invested,curPrice,curVal,gain,gainPct};
   });
+  const calcGainsPEA=()=>settings.peaEtfs.map((etf,i)=>{
+  const totalInvested=Object.values(investments).reduce((s,v)=>s+(v[`e${i}`]||0),0);
+  const totalParts=Object.values(investments).filter(v=>(v[`e${i}`]||0)>0).length;
+  const avgPrice=totalParts>0?totalInvested/totalParts:(etf.prixMoyen||0);
+  const curPrice=prices[etf.ticker]||null;
+  const curVal=curPrice!=null?curPrice*totalParts:null;
+  const gain=curVal!=null?curVal-totalInvested:null;
+  const gainPct=gain!=null&&totalInvested>0?(gain/totalInvested)*100:null;
+  return {...etf,invested:totalInvested,parts:totalParts,avgPrice,curPrice,curVal,gain,gainPct};
+});
 
   // ─── Styles ───────────────────────────────────────────────
   const F="Nunito, system-ui, sans-serif";
@@ -333,7 +343,7 @@ export default function ETFTracker() {
                 <th style={{padding:"5px 0",textAlign:"right",...lbl("#4A4270")}}>Gain</th>
               </tr></thead>
               <tbody>
-                {calcGains(settings.peaEtfs).map((etf,i)=>{
+                {calcGainsPEA().map((etf,i)=>{
                   const color=ETF_COLORS[i%ETF_COLORS.length];
                   const gc=etf.gain==null?"#4A4270":etf.gain>=0?MINT:RED;
                   return <tr key={i} style={{borderBottom:`1px solid ${BORDER}40`}}>
@@ -465,14 +475,27 @@ export default function ETFTracker() {
                     style={{...inp({fontSize:12,padding:"9px 12px"}),flex:1}}/>
                 </div>
                 <div style={{display:"flex",gap:8,marginBottom:8}}>
-                  <div style={{flex:1}}><div style={{...lbl("#4A4270"),marginBottom:4}}>Parts</div>
-                    <input type="number" value={etf.parts} onChange={e=>saveCfg({...settings,peaEtfs:settings.peaEtfs.map((x,j)=>j===i?{...x,parts:+e.target.value}:x)})}
-                      style={inp({fontSize:12,padding:"9px 12px"})}/>
-                  </div>
-                  <div style={{flex:1}}><div style={{...lbl("#4A4270"),marginBottom:4}}>Prix moyen (€)</div>
-                    <input type="number" step="0.0001" value={etf.prixMoyen} onChange={e=>saveCfg({...settings,peaEtfs:settings.peaEtfs.map((x,j)=>j===i?{...x,prixMoyen:+e.target.value}:x)})}
-                      style={inp({fontSize:12,padding:"9px 12px"})}/>
-                  </div>
+                 {(()=>{
+  const tp=Object.values(investments).filter(v=>(v[`e${i}`]||0)>0).length;
+  const ti=Object.values(investments).reduce((s,v)=>s+(v[`e${i}`]||0),0);
+  const ap=tp>0?(ti/tp).toFixed(2):null;
+  return <div style={{display:"flex",gap:8}}>
+    <div style={{flex:1}}>
+      <div style={{...lbl("#4A4270"),marginBottom:4}}>Parts</div>
+      <div style={{...inp({fontSize:12,padding:"9px 12px"}),color:tp>0?MINT:"#4A4270",cursor:"default"}}>
+        {tp>0?tp:"—"}
+      </div>
+    </div>
+    <div style={{flex:1}}>
+      <div style={{...lbl("#4A4270"),marginBottom:4}}>Prix moyen (€)</div>
+      {tp>0
+        ?<div style={{...inp({fontSize:12,padding:"9px 12px"}),color:MINT,cursor:"default"}}>{ap}</div>
+        :<input type="number" step="0.0001" value={etf.prixMoyen} onChange={e=>saveCfg({...settings,peaEtfs:settings.peaEtfs.map((x,j)=>j===i?{...x,prixMoyen:+e.target.value}:x)})}
+          style={inp({fontSize:12,padding:"9px 12px"})} placeholder="Premier prix"/>
+      }
+    </div>
+  </div>;
+})()}
                 </div>
                 <div><div style={{...lbl("#4A4270"),marginBottom:4}}>🎯 Objectif DCA mensuel</div>
                   <div style={{position:"relative"}}>
