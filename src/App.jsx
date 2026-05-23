@@ -49,6 +49,7 @@ export default function ETFTracker() {
   const [investments, setInv]   = useState({});
   const [settings, setCfg]      = useState(DEFAULT_SETTINGS);
   const [loaded, setLoaded]     = useState(false);
+  const [splashPhase, setSplashPhase] = useState("loading");
   const [storageMode, setSMode] = useState(null);
   const [selYear, setSelYear]   = useState(now.getFullYear());
   const [selMonth, setSelMonth] = useState(now.getMonth()+1);
@@ -67,7 +68,7 @@ const [isDragging, setIsDragging] = useState(false);
     l.href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap";
     document.head.appendChild(l);
     const s=document.createElement("style");
-s.textContent="body,html{margin:0;padding:0;background:#13111A;overscroll-behavior-x:none;}@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}";
+s.textContent="body,html{margin:0;padding:0;background:#13111A;overscroll-behavior-x:none;}@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}@keyframes flowerPulse{0%,100%{transform:scale(0.9);opacity:0.7}50%{transform:scale(1.1);opacity:1}}@keyframes flowerExplode{0%{transform:scale(1);opacity:1}60%{transform:scale(3);opacity:1}100%{transform:scale(22);opacity:0}}@keyframes splashExit{0%{opacity:1}65%{opacity:1}100%{opacity:0}}";
 document.head.appendChild(s);
   },[]);
 
@@ -113,6 +114,13 @@ document.head.appendChild(s);
     document.removeEventListener("touchend",onEnd);
   };
 },[]);
+
+useEffect(()=>{
+  if(!loaded) return;
+  setSplashPhase("exploding");
+  const t=setTimeout(()=>setSplashPhase("done"),900);
+  return()=>clearTimeout(t);
+},[loaded]);
   
   useEffect(()=>{
     (async()=>{
@@ -246,10 +254,26 @@ document.head.appendChild(s);
   </button>;
 };
 
-  if(!loaded) return <div style={{background:BG,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:F}}><div style={{textAlign:"center"}}><div style={{fontSize:52}}>🌸</div><div style={{color:LILA,fontWeight:800,marginTop:10}}>Chargement...</div></div></div>;
+  const SplashFlower=()=><svg width="140" height="140" viewBox="-50 -50 100 100">
+  <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#FF6EB4"/><stop offset="100%" stopColor="#C084FC"/></linearGradient></defs>
+  {[0,72,144,216,288].map((a,i)=><path key={i} d="M0,0 C-3,-2 -4.5,-6.5 -3,-10 C-1.5,-13 0,-11.5 0,-11.5 C0,-11.5 1.5,-13 3,-10 C4.5,-6.5 3,-2 0,0Z" fill="url(#sg)" transform={`rotate(${a}) scale(3.2)`} opacity={0.95-i*0.04}/>)}
+  <circle r="5" fill="#FFD93D"/>
+</svg>;
+
+if(splashPhase==="loading") return (
+  <div style={{background:BG,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:F}}>
+    <div style={{animation:"flowerPulse 1.4s ease-in-out infinite"}}><SplashFlower/></div>
+  </div>
+);
 
   return (
     <div style={{background:BG,minHeight:"100vh",fontFamily:F,maxWidth:480,margin:"0 auto",paddingBottom:90}}>
+
+      {splashPhase==="exploding"&&(
+  <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",background:BG,animation:"splashExit 0.9s ease forwards"}}>
+    <div style={{animation:"flowerExplode 0.9s cubic-bezier(0.36,0.07,0.19,0.97) forwards"}}><SplashFlower/></div>
+  </div>
+)}
 
       {/* HEADER */}
       <div style={{background:CARD,padding:"20px 20px 16px",borderBottom:`1px solid ${BORDER}`,boxShadow:"0 4px 24px rgba(0,0,0,0.4)"}}>
