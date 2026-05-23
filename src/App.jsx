@@ -190,7 +190,7 @@ export default function ETFTracker() {
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}}>
           <div>
             <div style={{fontSize:22,fontWeight:900,color:"white",letterSpacing:-0.5}}>
-              Mon <span style={{background:`linear-gradient(90deg,${PINK},${LILA})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>PEA</span> 🌸
+              <span style={{background:`linear-gradient(90deg,${PINK},${LILA})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>PeaBloom</span> 🌸
             </div>
             <div style={{display:"flex",alignItems:"center",gap:6,marginTop:4}}>
               <span style={{fontSize:10,color:"#4A4270",fontWeight:700}}>DCA · XTB</span>
