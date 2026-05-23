@@ -57,6 +57,8 @@ export default function ETFTracker() {
   const [priceLoading, setPL]   = useState(false);
   const [priceMsg, setPriceMsg] = useState("");
   const [tabDir, setTabDir] = useState("right");
+  const [dragX, setDragX] = useState(0);
+const [isDragging, setIsDragging] = useState(false);
 
   useEffect(()=>{
     if(document.querySelector("#nfont")) return;
@@ -70,27 +72,30 @@ document.head.appendChild(s);
 
   useEffect(()=>{
   let startX=0;
+  let currentDrag=0;
   const tabs=["entry","monthly","annual","settings"];
-  const onStart=e=>{ startX=e.touches[0].clientX; };
-  const onEnd=e=>{
-    const diff=startX-e.changedTouches[0].clientX;
-    if(Math.abs(diff)<60) return;
-    if(diff>0){
-      setTabDir("right");
-      setTab(t=>tabs[Math.min(tabs.indexOf(t)+1,tabs.length-1)]);
-    } else {
-      setTabDir("left");
-      setTab(t=>tabs[Math.max(tabs.indexOf(t)-1,0)]);
-    }
+  const onStart=e=>{ startX=e.touches[0].clientX; currentDrag=0; setIsDragging(true); };
+  const onMove=e=>{ currentDrag=e.touches[0].clientX-startX; setDragX(currentDrag); };
+  const onEnd=()=>{
+    setIsDragging(false);
+    if(Math.abs(currentDrag)<60){ setDragX(0); currentDrag=0; return; }
+    const dir=currentDrag<0?"right":"left";
+    setTabDir(dir);
+    setTab(t=>{
+      const idx=tabs.indexOf(t);
+      return dir==="right"?tabs[Math.min(idx+1,tabs.length-1)]:tabs[Math.max(idx-1,0)];
+    });
+    setDragX(0); currentDrag=0;
   };
-  document.addEventListener("touchstart",onStart);
+  document.addEventListener("touchstart",onStart,{passive:true});
+  document.addEventListener("touchmove",onMove,{passive:true});
   document.addEventListener("touchend",onEnd);
   return()=>{
     document.removeEventListener("touchstart",onStart);
+    document.removeEventListener("touchmove",onMove);
     document.removeEventListener("touchend",onEnd);
   };
 },[]);
-
   useEffect(()=>{
     (async()=>{
       const ri=await storageGet("etf5-inv"), rc=await storageGet("etf5-cfg"), rp=await storageGet("etf5-prices");
@@ -256,7 +261,8 @@ document.head.appendChild(s);
         </div>
       </div>
 
-      <div key={tab} style={{padding:"16px 16px 0",animation:`${tabDir==="right"?"tabInRight":"tabInLeft"} 0.22s ease`}}>
+     <div style={{transform:`translateX(${dragX}px)`,transition:isDragging?"none":"transform 0.25s ease"}}>
+<div key={tab} style={{padding:"16px 16px 0",animation:`${tabDir==="right"?"tabInRight":"tabInLeft"} 0.22s ease`}}>
 
         {/* ══ SAISIE ══ */}
         {tab==="entry" && <>
@@ -573,6 +579,8 @@ document.head.appendChild(s);
           </div>
         </>}
       </div>
+
+       </div>
 
       {/* NAV */}
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:CARD,borderTop:`1px solid ${BORDER}`,display:"flex",boxShadow:"0 -4px 24px rgba(0,0,0,0.5)"}}>
