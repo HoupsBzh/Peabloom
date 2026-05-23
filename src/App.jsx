@@ -66,7 +66,7 @@ const [isDragging, setIsDragging] = useState(false);
     l.href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap";
     document.head.appendChild(l);
     const s=document.createElement("style");
-s.textContent="@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}";
+s.textContent="body,html{margin:0;padding:0;background:#13111A;}@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}";
 document.head.appendChild(s);
   },[]);
 
@@ -581,6 +581,21 @@ document.head.appendChild(s);
       </div>
 
        </div>
+
+      {isDragging&&Math.abs(dragX)>20&&(()=>{
+  const tabs=["entry","monthly","annual","settings"];
+  const info={entry:{emoji:"✏️",label:"Saisie"},monthly:{emoji:"📅",label:"Mensuel"},annual:{emoji:"📊",label:"Annuel"},settings:{emoji:"⚙️",label:"Réglages"}};
+  const ci=tabs.indexOf(tab);
+  const ti=dragX<0?Math.min(ci+1,tabs.length-1):Math.max(ci-1,0);
+  if(ti===ci) return null;
+  const t=info[tabs[ti]];
+  const op=Math.min(Math.abs(dragX)/100,1);
+  const isRight=dragX<0;
+  return <div style={{position:"fixed",top:"50%",transform:"translateY(-50%)",zIndex:50,[isRight?"right":"left"]:0,background:"rgba(30,26,46,0.92)",border:`1px solid ${PINK}40`,borderRadius:isRight?"16px 0 0 16px":"0 16px 16px 0",padding:"18px 10px",display:"flex",flexDirection:"column",alignItems:"center",gap:8,opacity:op}}>
+    <span style={{fontSize:26}}>{t.emoji}</span>
+    <span style={{fontSize:9,fontWeight:800,color:"rgba(245,240,238,0.7)",letterSpacing:".12em",textTransform:"uppercase",writingMode:"vertical-rl"}}>{t.label}</span>
+  </div>;
+})()}
 
       {/* NAV */}
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:CARD,borderTop:`1px solid ${BORDER}`,display:"flex",boxShadow:"0 -4px 24px rgba(0,0,0,0.5)"}}>
