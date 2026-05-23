@@ -254,11 +254,7 @@ useEffect(()=>{
   </button>;
 };
 
-  const SplashFlower=()=><svg width="140" height="140" viewBox="-50 -50 100 100">
-  <defs><linearGradient id="sg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#FF6EB4"/><stop offset="100%" stopColor="#C084FC"/></linearGradient></defs>
-  {[0,72,144,216,288].map((a,i)=><path key={i} d="M0,0 C-3,-2 -4.5,-6.5 -3,-10 C-1.5,-13 0,-11.5 0,-11.5 C0,-11.5 1.5,-13 3,-10 C4.5,-6.5 3,-2 0,0Z" fill="url(#sg)" transform={`rotate(${a}) scale(3.2)`} opacity={0.95-i*0.04}/>)}
-  <circle r="5" fill="#FFD93D"/>
-</svg>;
+  const SplashFlower=()=><img src={`${import.meta.env.BASE_URL}splash-logo.png`} alt="" style={{width:"65vw",maxWidth:320,objectFit:"contain"}}/>;
 
 if(splashPhase==="loading") return (
   <div style={{background:BG,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:F}}>
