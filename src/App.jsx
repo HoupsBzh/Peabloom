@@ -7,6 +7,7 @@ const PINK="#FF6EB4", BLUE="#5BC8F5", MINT="#3DD9B3", PEACH="#FFB347", LILA="#C0
 const BG="#13111A", CARD="#1E1A2E", BORDER="#2E2845";
 const ETF_COLORS = [PINK, BLUE, MINT, LILA, PEACH];
 const BACKEND_URL = "https://peabloom-backend.onrender.com";
+const SHEETS_URL = "https://script.google.com/macros/s/AKfycbxP_t5i388PWSQQaAsSQDQmB46gli4wzNX2Lzp0Vuh2zS3FexDb_ruDjdpmocZ7-EZT/exec";
 
 const DEFAULT_SETTINGS = {
   peaEtfs: [
@@ -22,25 +23,23 @@ const DEFAULT_SETTINGS = {
 
 // ─── STORAGE (localStorage uniquement hors Claude) ────────────
 async function storageGet(key) {
-  if (window.storage) {
-    try {
-      const r = await Promise.race([window.storage.get(key), new Promise((_,rej)=>setTimeout(()=>rej(),4000))]);
-      if (r?.value != null) return { value: r.value, source:"cloud" };
-    } catch {}
-  }
-  try { const v = localStorage.getItem(key); if (v!=null) return { value:v, source:"local" }; } catch {}
+  try {
+    const r = await fetch(`${SHEETS_URL}?key=${key}`);
+    const data = await r.json();
+    if (data.value != null) return { value: data.value, source: "cloud" };
+  } catch {}
   return null;
 }
 async function storageSet(key, value) {
-  let cloud = false;
-  if (window.storage) {
-    try {
-      const r = await Promise.race([window.storage.set(key,value), new Promise((_,rej)=>setTimeout(()=>rej(),4000))]);
-      if (r!=null) cloud = true;
-    } catch {}
-  }
-  try { localStorage.setItem(key, value); } catch {}
-  return cloud ? "cloud" : "local";
+  try {
+    fetch(SHEETS_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify({ key, value })
+    });
+  } catch {}
+  return "cloud";
 }
 
 export default function ETFTracker() {
