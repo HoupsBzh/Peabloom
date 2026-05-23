@@ -591,10 +591,12 @@ document.head.appendChild(s);
   const t=info[tabs[ti]];
   const op=Math.min(Math.abs(dragX)/100,1);
   const isRight=dragX<0;
-  return <div style={{position:"fixed",top:"50%",transform:"translateY(-50%)",zIndex:50,[isRight?"right":"left"]:0,background:"rgba(30,26,46,0.92)",border:`1px solid ${PINK}40`,borderRadius:isRight?"16px 0 0 16px":"0 16px 16px 0",padding:"18px 10px",display:"flex",flexDirection:"column",alignItems:"center",gap:8,opacity:op}}>
+  return <div style={{position:"fixed",top:0,bottom:0,[isRight?"right":"left"]:0,width:44,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:50,pointerEvents:"none"}}>
+  <div style={{background:"rgba(30,26,46,0.92)",border:`1px solid ${PINK}40`,borderRadius:isRight?"16px 0 0 16px":"0 16px 16px 0",padding:"18px 10px",display:"flex",flexDirection:"column",alignItems:"center",gap:8,opacity:op}}>
     <span style={{fontSize:26}}>{t.emoji}</span>
     <span style={{fontSize:9,fontWeight:800,color:"rgba(245,240,238,0.7)",letterSpacing:".12em",textTransform:"uppercase",writingMode:"vertical-rl"}}>{t.label}</span>
-  </div>;
+  </div>
+</div>;
 })()}
 
       {/* NAV */}
