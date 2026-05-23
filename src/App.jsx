@@ -254,7 +254,7 @@ useEffect(()=>{
   </button>;
 };
 
-  const SplashFlower=()=><img src={`${import.meta.env.BASE_URL}splash-logo.png`} alt="" style={{width:"65vw",maxWidth:320,objectFit:"contain"}}/>;
+  const SplashFlower=()=><img src={`${import.meta.env.BASE_URL}splash-logo.png`} alt="" style={{width:"65vw",maxWidth:320,objectFit:"contain",mixBlendMode:"screen"}}/>;
 
 if(splashPhase==="loading") return (
   <div style={{background:BG,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:F}}>
