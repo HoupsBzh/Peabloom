@@ -67,7 +67,7 @@ const [isDragging, setIsDragging] = useState(false);
     l.href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap";
     document.head.appendChild(l);
     const s=document.createElement("style");
-s.textContent="body,html{margin:0;padding:0;background:#13111A;}@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}";
+s.textContent="body,html{margin:0;padding:0;background:#13111A;overscroll-behavior-x:none;}@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}";
 document.head.appendChild(s);
   },[]);
 
