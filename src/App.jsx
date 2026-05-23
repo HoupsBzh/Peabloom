@@ -56,6 +56,7 @@ export default function ETFTracker() {
   const [prices, setPrices]     = useState({});
   const [priceLoading, setPL]   = useState(false);
   const [priceMsg, setPriceMsg] = useState("");
+  const [tabDir, setTabDir] = useState("right");
 
   useEffect(()=>{
     if(document.querySelector("#nfont")) return;
@@ -63,7 +64,7 @@ export default function ETFTracker() {
     l.href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap";
     document.head.appendChild(l);
     const s=document.createElement("style");
-s.textContent="@keyframes tabIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}";
+s.textContent="@keyframes tabInRight{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}@keyframes tabInLeft{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}";
 document.head.appendChild(s);
   },[]);
 
@@ -74,11 +75,13 @@ document.head.appendChild(s);
   const onEnd=e=>{
     const diff=startX-e.changedTouches[0].clientX;
     if(Math.abs(diff)<60) return;
-    setTab(t=>{
-      const idx=tabs.indexOf(t);
-      if(diff>0) return tabs[Math.min(idx+1,tabs.length-1)];
-      return tabs[Math.max(idx-1,0)];
-    });
+    if(diff>0){
+      setTabDir("right");
+      setTab(t=>tabs[Math.min(tabs.indexOf(t)+1,tabs.length-1)]);
+    } else {
+      setTabDir("left");
+      setTab(t=>tabs[Math.max(tabs.indexOf(t)-1,0)]);
+    }
   };
   document.addEventListener("touchstart",onStart);
   document.addEventListener("touchend",onEnd);
@@ -206,13 +209,19 @@ document.head.appendChild(s);
     return <div style={{display:"flex",alignItems:"center",gap:4,fontSize:9,fontWeight:800,color:b.color,background:`${b.color}18`,padding:"3px 8px",borderRadius:99,border:`1px solid ${b.color}40`}}>{b.icon} {b.label}</div>;
   };
   const Nav=({id,emoji,label})=>{
-    const a=tab===id;
-    return <button onClick={()=>setTab(id)} style={{flex:1,background:"none",border:"none",display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"10px 0 8px",cursor:"pointer"}}>
-      <span style={{fontSize:20}}>{emoji}</span>
-      <span style={{fontSize:9,fontWeight:a?900:600,color:a?PINK:"#4A4270",fontFamily:F}}>{label}</span>
-      <div style={{width:a?20:0,height:3,background:`linear-gradient(90deg,${PINK},${LILA})`,borderRadius:99,transition:"width 0.25s"}}/>
-    </button>;
-  };
+  const a=tab===id;
+  const tabs=["entry","monthly","annual","settings"];
+  return <button onClick={()=>{
+    const fromIdx=tabs.indexOf(tab);
+    const toIdx=tabs.indexOf(id);
+    setTabDir(toIdx>=fromIdx?"right":"left");
+    setTab(id);
+  }} style={{flex:1,background:"none",border:"none",display:"flex",flexDirection:"column",alignItems:"center",gap:2,padding:"10px 0 8px",cursor:"pointer"}}>
+    <span style={{fontSize:20}}>{emoji}</span>
+    <span style={{fontSize:9,fontWeight:a?900:600,color:a?PINK:"#4A4270",fontFamily:F}}>{label}</span>
+    <div style={{width:a?20:0,height:3,background:`linear-gradient(90deg,${PINK},${LILA})`,borderRadius:99,transition:"width 0.25s"}}/>
+  </button>;
+};
 
   if(!loaded) return <div style={{background:BG,minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",fontFamily:F}}><div style={{textAlign:"center"}}><div style={{fontSize:52}}>🌸</div><div style={{color:LILA,fontWeight:800,marginTop:10}}>Chargement...</div></div></div>;
 
@@ -247,7 +256,7 @@ document.head.appendChild(s);
         </div>
       </div>
 
-      <div key={tab} style={{padding:"16px 16px 0",animation:"tabIn 0.18s ease"}}>
+      <div key={tab} style={{padding:"16px 16px 0",animation:`${tabDir==="right"?"tabInRight":"tabInLeft"} 0.22s ease`}}>
 
         {/* ══ SAISIE ══ */}
         {tab==="entry" && <>
