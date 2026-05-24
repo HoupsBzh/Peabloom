@@ -9,6 +9,7 @@ const BG="#13111A", CARD="#1E1A2E", BORDER="#2E2845";
 const ETF_COLORS = [PINK, BLUE, MINT, LILA, PEACH];
 const BACKEND_URL = "https://peabloom-backend.onrender.com";
 const SHEETS_URL = "https://script.google.com/macros/s/AKfycbxP_t5i388PWSQQaAsSQDQmB46gli4wzNX2Lzp0Vuh2zS3FexDb_ruDjdpmocZ7-EZT/exec";
+const VAPID_PUBLIC_KEY = "BGt4uQjO_1C5t55Z2YyxsNd4JLm66Y7zV52h6iUKZg4gD25GYQZC3RBXOM8NQyGWrAhz5e78cACzfumEDPTtIG8";
 
 const DEFAULT_SETTINGS = {
   peaEtfs: [
@@ -115,6 +116,44 @@ document.head.appendChild(s);
   };
 },[]);
 
+  useEffect(()=>{
+  const params = new URLSearchParams(window.location.search);
+  const t = params.get('tab');
+  if(t && ['entry','monthly','annual','settings'].includes(t)) setTab(t);
+}, []);
+
+useEffect(()=>{
+  if(!navigator.serviceWorker) return;
+  const handler = e => {
+    if(e.data?.type==='SET_TAB') setTab(e.data.tab);
+  };
+  navigator.serviceWorker.addEventListener('message', handler);
+  return()=>navigator.serviceWorker.removeEventListener('message', handler);
+}, []);
+
+useEffect(()=>{
+  if(!loaded || !('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  (async()=>{
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const existing = await reg.pushManager.getSubscription();
+      if(existing) return;
+      const permission = await Notification.requestPermission();
+      if(permission !== 'granted') return;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: VAPID_PUBLIC_KEY
+      });
+      await fetch(SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ key: 'push_subscription', value: JSON.stringify(sub) })
+      });
+    } catch(e) { console.warn('Push setup:', e); }
+  })();
+},[loaded]);
+  
 useEffect(()=>{
   if(!loaded) return;
   setSplashPhase("exploding");
