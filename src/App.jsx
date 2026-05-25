@@ -658,22 +658,22 @@ if(splashPhase==="loading") return (
 
        </div>
 
-      {isDragging&&Math.abs(dragX)>20&&(()=>{
-  const tabs=["entry","monthly","annual","settings"];
-  const info={entry:{emoji:"✏️",label:"Saisie"},monthly:{emoji:"📅",label:"Mensuel"},annual:{emoji:"📊",label:"Annuel"},settings:{emoji:"⚙️",label:"Réglages"}};
-  const ci=tabs.indexOf(tab);
-  const ti=dragX<0?Math.min(ci+1,tabs.length-1):Math.max(ci-1,0);
-  if(ti===ci) return null;
-  const t=info[tabs[ti]];
-  const op=Math.min(Math.abs(dragX)/100,1);
-  const isRight=dragX<0;
-  return <div style={{position:"fixed",top:0,bottom:0,[isRight?"right":"left"]:0,width:44,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",zIndex:50,pointerEvents:"none",willChange:"transform",transform:"translateZ(0)"}}>
-  <div style={{background:"rgba(30,26,46,0.92)",border:`1px solid ${PINK}40`,borderRadius:isRight?"16px 0 0 16px":"0 16px 16px 0",padding:"18px 10px",display:"flex",flexDirection:"column",alignItems:"center",gap:8,opacity:op}}>
-    <span style={{fontSize:26}}>{t.emoji}</span>
-    <span style={{fontSize:9,fontWeight:800,color:"rgba(245,240,238,0.7)",letterSpacing:".12em",textTransform:"uppercase",writingMode:"vertical-rl"}}>{t.label}</span>
-  </div>
-</div>;
-})()}
+     <div style={{position:"fixed",top:0,left:0,right:0,bottom:0,pointerEvents:"none",zIndex:50,willChange:"transform"}}>
+  {isDragging&&Math.abs(dragX)>20&&(()=>{
+    const tabs=["entry","monthly","annual","settings"];
+    const info={entry:{emoji:"✏️",label:"Saisie"},monthly:{emoji:"📅",label:"Mensuel"},annual:{emoji:"📊",label:"Annuel"},settings:{emoji:"⚙️",label:"Réglages"}};
+    const ci=tabs.indexOf(tab);
+    const ti=dragX<0?Math.min(ci+1,tabs.length-1):Math.max(ci-1,0);
+    if(ti===ci)return null;
+    const t=info[tabs[ti]];
+    const op=Math.min(Math.abs(dragX)/100,1);
+    const isRight=dragX<0;
+    return <div style={{position:"absolute",top:"50%",transform:"translateY(-50%)",[isRight?"right":"left"]:0,background:"rgba(30,26,46,0.92)",border:`1px solid ${PINK}40`,borderRadius:isRight?"16px 0 0 16px":"0 16px 16px 0",padding:"18px 10px",display:"flex",flexDirection:"column",alignItems:"center",gap:8,opacity:op}}>
+      <span style={{fontSize:26}}>{t.emoji}</span>
+      <span style={{fontSize:9,fontWeight:800,color:"rgba(245,240,238,0.7)",letterSpacing:".12em",textTransform:"uppercase",writingMode:"vertical-rl"}}>{t.label}</span>
+    </div>;
+  })()}
+</div>
 
       {/* NAV */}
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:CARD,borderTop:`1px solid ${BORDER}`,display:"flex",boxShadow:"0 -4px 24px rgba(0,0,0,0.5)"}}>
