@@ -33,12 +33,8 @@ async function storageGet(key) {
 }
 async function storageSet(key, value) {
   try {
-    fetch(SHEETS_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify({ key, value })
-    });
+    const url = `${SHEETS_URL}?action=set&key=${encodeURIComponent(key)}&value=${encodeURIComponent(value)}`;
+    await fetch(url);
   } catch {}
   return "cloud";
 }
