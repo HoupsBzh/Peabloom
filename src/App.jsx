@@ -210,6 +210,19 @@ useEffect(()=>{
         if (data[ticker] != null) results[ticker] = data[ticker];
       });
 
+      // Retry pour les tickers manquants
+const missing = allEtfs.filter(t => results[t] == null);
+if (missing.length > 0) {
+  try {
+    setPriceMsg("📡 Récupération des cours manquants...");
+    await new Promise(r => setTimeout(r, 2000));
+    const r2 = await fetch(`${BACKEND_URL}/prices?tickers=${missing.join(",")}`, { signal: AbortSignal.timeout(30000) });
+    if (r2.ok) {
+      const data2 = await r2.json();
+      missing.forEach(t => { if (data2[t] != null) results[t] = data2[t]; });
+    }
+  } catch {}
+}
       const found = Object.keys(results).length;
       if (found > 0) {
         setPrices(results);
